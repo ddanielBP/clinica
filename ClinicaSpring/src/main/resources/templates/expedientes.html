@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Expedientes — Expedientes clínicos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;color:#1c1c1e;min-height:100%;
+    background:
+      radial-gradient(1000px 700px at 6% 18%, rgba(47,111,180,.85) 0%, rgba(47,111,180,0) 60%),
+      radial-gradient(900px 620px at 88% 88%, rgba(240,138,75,.9) 0%, rgba(240,138,75,0) 58%),
+      radial-gradient(760px 520px at 78% 8%, rgba(207,224,239,.9) 0%, rgba(207,224,239,0) 62%),
+      linear-gradient(135deg,#3a78c2 0%,#a9c4de 38%,#e8c9ae 68%,#f08a4b 100%);
+    background-attachment:fixed}
+  ::selection{background:#07576e;color:#fff}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 24px 48px}
+  header{display:flex;justify-content:space-between;align-items:center;margin:0 0 22px;background:rgba(255,255,255,.82);backdrop-filter:blur(8px);border-radius:14px;padding:12px 18px;box-shadow:0 2px 10px rgba(20,20,30,.08)}
+  .brand{font-size:15px;font-weight:800}.brand span{color:#0d7d9c}
+  .out{font-size:12.5px;font-weight:600;color:#5d5d62}
+  .out:focus-visible,a.rowlink:focus-visible{outline:2px solid #07576e;outline-offset:2px}
+  .titlebar{background:rgba(255,255,255,.82);backdrop-filter:blur(8px);border-radius:14px;padding:14px 18px;margin:0 0 18px;box-shadow:0 2px 10px rgba(20,20,30,.08)}
+  h1{font-size:20px;margin:0}
+  .sub{font-size:12.5px;color:#5d5d62;margin:4px 0 0}
+  a.rowlink{text-decoration:none;color:inherit;display:block}
+  a.rowlink .rowlink-inner{border-radius:14px}
+  .row{background:#fff;border-radius:14px;padding:16px 18px;margin:0 0 12px;box-shadow:0 2px 10px rgba(20,20,30,.06);display:flex;align-items:center;gap:14px}
+  .folio{font-size:12px;font-weight:800;color:#0d7d9c;white-space:nowrap}
+  .grow{flex:1;min-width:160px}
+  .grow b{display:block;font-size:14px}
+  .grow span{font-size:12.5px;color:#5d5d62}
+  .fecha{font-size:12.5px;color:#5d5d62;white-space:nowrap}
+  .empty{background:#fff;border-radius:14px;padding:28px;text-align:center;font-size:14px;color:#5d5d62;box-shadow:0 2px 10px rgba(20,20,30,.06)}
+  @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Expedientes <span>clínicos</span></div>
+    <a class="out" th:href="@{/panel}" href="#">← Volver al panel</a>
+  </header>
+
+  <div class="titlebar">
+    <h1 th:text="${esMedico} ? 'Expedientes atendidos' : 'Mis expedientes'">Mis expedientes</h1>
+    <p class="sub" th:text="${#lists.size(lista)} + ' registrados'">0 registrados</p>
+  </div>
+
+  <a class="rowlink" th:each="e : ${lista}" th:href="@{'/expedientes/' + ${e.idConsulta}}" href="#">
+  <div class="row">
+    <span class="folio" th:text="'EXP-' + ${e.idConsulta}">EXP-1</span>
+    <div class="grow">
+      <b th:text="${e.motivoConsulta}">Motivo</b>
+      <span th:text="${esMedico} ? (${e.paciente.nombre + ' ' + e.paciente.apellido}) : (${e.medico.nombre + ' ' + e.medico.apellido + ' · ' + e.medico.especialidad})">Persona</span>
+    </div>
+    <span class="fecha" th:text="${#temporals.format(e.fechaConsulta, 'dd MMM yyyy')}">fecha</span>
+  </div>
+  </a>
+  <div class="empty" th:if="${#lists.isEmpty(lista)}">Aún no hay expedientes registrados.</div>
+</div>
+</body>
+</html>

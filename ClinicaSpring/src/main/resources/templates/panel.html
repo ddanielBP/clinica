@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Panel — Expedientes clínicos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;color:#1c1c1e;min-height:100%;background:radial-gradient(1000px 700px at 6% 18%, rgba(47,111,180,.85) 0%, rgba(47,111,180,0) 60%),radial-gradient(900px 620px at 88% 88%, rgba(240,138,75,.9) 0%, rgba(240,138,75,0) 58%),radial-gradient(760px 520px at 78% 8%, rgba(207,224,239,.9) 0%, rgba(207,224,239,0) 62%),linear-gradient(135deg,#3a78c2 0%,#a9c4de 38%,#e8c9ae 68%,#f08a4b 100%);background-attachment:fixed;}
+  ::selection{background:#07576e;color:#fff}
+  .wrap{max-width:1400px;margin:0 auto;padding:28px 24px 40px;min-height:100dvh;display:flex;flex-direction:column}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:0 0 22px;background:rgba(255,255,255,.82);backdrop-filter:blur(8px);border-radius:14px;padding:12px 18px;box-shadow:0 2px 10px rgba(20,20,30,.08)}
+  .brand{font-size:15px;font-weight:800;letter-spacing:-.01em}
+  .brand span{color:#0d7d9c}
+  .top{display:flex;align-items:center;gap:12px}
+  .tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:5px 11px;border-radius:999px}
+  .tag.teal{background:#e3f1f4;color:#07576e}
+  .tag.green{background:#e6f6ec;color:#147a3e}
+  .tag.amber{background:#fdf1e0;color:#9a6200}
+  .tag.gray{background:#e2e2e5;color:#3f3f43}
+  .out{font-size:12.5px;font-weight:600;color:#5d5d62}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;align-items:start}
+  .card{background:#fff;border-radius:18px;padding:26px;box-shadow:0 2px 10px rgba(20,20,30,.06);min-height:320px;display:flex;flex-direction:column}
+  .lbl{font-size:12.5px;font-weight:600}
+  .sub{font-size:12.5px;color:#5d5d62;margin-top:2px}
+  .big{font-size:44px;font-weight:800;letter-spacing:-.03em;margin:18px 0 4px;font-variant-numeric:tabular-nums}
+  .big small{font-size:20px;font-weight:700;color:#5d5d62}
+  .rowline{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #f0f0f2;font-size:13px}
+  a.rowline{text-decoration:none;color:inherit;border-radius:8px}
+  a.rowline:hover{background:#f4f8f9}
+  a.rowline:focus-visible{outline:2px solid #07576e;outline-offset:2px}
+  .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .avatars{display:flex;align-items:center;margin-top:12px}
+  .av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;border:2px solid #fff;margin-left:-8px}
+  .av:first-child{margin-left:0}
+  .btn{border:1px solid #e2e2e5;background:#fff;border-radius:8px;font:inherit;font-size:12px;font-weight:600;padding:7px 16px;color:#1c1c1e;text-decoration:none;display:inline-block}
+  .btn:hover{background:#f4f6f7}
+  .btn.primary{background:#07576e;border-color:#07576e;color:#fff}
+  .btn.primary:hover{background:#053646}
+  a.btn:focus-visible,.out:focus-visible{outline:2px solid #07576e;outline-offset:2px}
+  .bar{height:7px;border-radius:99px;background:#efeff1;overflow:hidden;margin-top:6px}
+  .bar i{display:block;height:100%;border-radius:99px}
+  .hero-av{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-size:22px;font-weight:800;color:#fff;background:#0d7d9c;margin:16px 0 6px}
+  .spacer{flex:1}
+  .foot-row{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+  .icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#e3f1f4;flex:none}
+  .empty{font-size:13px;color:#5d5d62;padding:12px 0}
+  @media (max-width:1150px){.grid{grid-template-columns:1fr 1fr}}
+  @media (max-width:640px){.grid{grid-template-columns:1fr}header{flex-wrap:wrap}}
+  @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Expedientes <span>clínicos</span></div>
+    <div class="top">
+      <span class="tag teal" th:text="${rolNombre}">Médico</span>
+      <a class="out" th:href="@{/logout}" href="#">Salir</a>
+    </div>
+  </header>
+  <div class="card" th:if="${param.cita}" style="min-height:0;margin-bottom:18px;border:1px solid #b6dfc0;background:#e6f4ea">
+    <span style="font-size:13px;font-weight:600;color:#0d4d24">Cita agendada. El médico la revisará pronto.</span>
+  </div>
+
+  <div class="grid">
+    <!-- PERFIL -->
+    <section class="card" aria-label="Perfil">
+      <div class="lbl">Mi perfil</div>
+      <div class="sub" th:text="${rolNombre}">Médico</div>
+      <div style="display:flex;gap:14px;align-items:center;margin-top:14px">
+        <span class="hero-av" style="margin:0" th:text="${iniciales}">DR</span>
+        <div>
+          <div class="lbl" style="font-size:16px" th:text="${perfilNombre}">Dra. Ramírez</div>
+          <div class="sub" th:text="${perfilFolio}">Folio EMP-2041</div>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <div class="rowline"><span style="color:#5d5d62">Correo</span><strong th:text="${usuario.correo}">correo</strong></div>
+      <th:block th:if="${!esMedico}">
+        <div class="rowline"><span style="color:#5d5d62">Fecha de nacimiento</span><strong th:text="${#temporals.format(perfil.fechaNacimiento, 'dd MMM yyyy')}">—</strong></div>
+        <div class="rowline"><span style="color:#5d5d62">Teléfono</span><strong th:text="${perfil.telefono} ?: '—'">—</strong></div>
+        <div class="rowline"><span style="color:#5d5d62">Tipo de sangre</span><strong th:text="${perfil.tipoSangre} ?: '—'">—</strong></div>
+        <div class="rowline"><span style="color:#5d5d62">Alergias</span><strong th:text="${perfil.alergias} ?: 'Ninguna registrada'">—</strong></div>
+      </th:block>
+      <th:block th:if="${esMedico}">
+        <div class="rowline"><span style="color:#5d5d62">Especialidad</span><strong th:text="${perfil.especialidad}">—</strong></div>
+        <div class="rowline"><span style="color:#5d5d62">Teléfono</span><strong th:text="${perfil.telefono} ?: '—'">—</strong></div>
+      </th:block>
+      <div class="rowline"><span style="color:#5d5d62">Estado</span><span class="tag green"><span class="dot" style="background:#22b573"></span> Activo</span></div>
+    </section>
+
+    <!-- CITAS -->
+    <section class="card" aria-label="Citas">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><div class="lbl">Citas</div><div class="sub">Próximas programadas</div></div>
+        <span class="tag teal" th:text="${#lists.size(citas)} + ' próximas'">0 próximas</span>
+      </div>
+      <div class="big" th:if="${proximaCita != null}" th:text="${#temporals.format(proximaCita.fechaHora, 'dd')}">12 <small th:text="${#temporals.format(proximaCita.fechaHora, '/ MMM')}">/ oct</small></div>
+      <div class="big" th:if="${proximaCita == null}">—</div>
+      <a class="rowline" th:href="@{'/citas/' + ${c.idCita}}" href="#" th:each="c, st : ${citas}" th:if="${st.index < 2}">
+        <span style="display:flex;gap:10px;align-items:center"><span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#07576e" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span><span th:text="${#temporals.format(c.fechaHora, 'dd MMM · HH:mm')}">fecha</span></span>
+        <span class="tag gray" th:text="${c.estado}">PENDIENTE</span>
+      </a>
+      <p class="empty" th:if="${#lists.isEmpty(citas)}">Sin citas programadas.</p>
+      <div class="spacer"></div>
+      <div class="foot-row" style="justify-content:flex-end">
+        <a th:if="${esMedico}" class="btn" th:href="@{/citas}" href="#">Citas</a>
+        <a th:if="${!esMedico}" class="btn primary" th:href="@{/citas/agendar}" href="#">Agendar cita</a>
+      </div>
+    </section>
+
+    <!-- EXPEDIENTES -->
+    <section class="card" aria-label="Expedientes médicos">
+      <div class="lbl">Expedientes médicos</div>
+      <div class="sub">Consultas registradas</div>
+      <div class="big" th:text="${totalExpedientes}">0</div>
+      <a class="rowline" th:each="e, st : ${expedientes}" th:if="${st.index < 2}" th:href="@{'/expedientes/' + ${e.idConsulta}}" href="#">
+        <span th:text="${e.motivoConsulta}">motivo</span>
+        <span class="sub" th:text="${#temporals.format(e.fechaConsulta, 'dd MMM')}">fecha</span>
+      </a>
+      <p class="empty" th:if="${#lists.isEmpty(expedientes)}">Aún no hay consultas registradas.</p>
+      <div class="spacer"></div>
+      <div class="foot-row" style="justify-content:flex-end">
+        <a class="btn" th:href="@{/expedientes}" href="#">Ver todos</a>
+      </div>
+    </section>
+
+    <!-- PACIENTES ASIGNADOS (médico) -->
+    <section class="card" th:if="${esMedico}" aria-label="Pacientes asignados">
+      <div class="lbl">Pacientes asignados</div>
+      <div class="sub" th:text="${#lists.size(pacientes)} + ' pacientes a tu cargo'">0 pacientes</div>
+      <div class="avatars" aria-hidden="true" th:if="${!#lists.isEmpty(pacientes)}">
+        <span class="av" th:each="p, st : ${pacientes}" th:if="${st.index < 4}"
+              th:text="${p.nombre.substring(0,1) + p.apellido.substring(0,1)}"
+              th:style="'background:' + ${colores[st.index % 4]} + ';' + (${st.index > 0} ? 'margin-left:-8px' : '')">AB</span>
+      </div>
+      <div class="spacer"></div>
+      <div class="rowline" th:each="p, st : ${pacientes}" th:if="${st.index < 2}">
+        <span style="display:flex;gap:8px;align-items:center"><span class="dot" style="background:#22b573"></span><span th:text="${p.nombre + ' ' + p.apellido}">nombre</span></span>
+        <span class="sub" th:text="${p.tipoSangre}">O+</span>
+      </div>
+      <p class="empty" th:if="${#lists.isEmpty(pacientes)}">Sin pacientes con citas registradas.</p>
+    </section>
+
+    <!-- MÉDICO ASIGNADO (paciente) -->
+    <section class="card" th:if="${!esMedico}" aria-label="Médico asignado">
+      <div class="lbl">Mi médico asignado</div>
+      <div class="sub" th:if="${medicoAsignado != null}" th:text="${medicoAsignado.especialidad}">Medicina interna</div>
+      <div th:if="${medicoAsignado != null}">
+        <span class="hero-av" th:text="${medicoAsignado.nombre.substring(0,1) + medicoAsignado.apellido.substring(0,1)}">DR</span>
+        <div class="lbl" style="font-size:16px" th:text="${medicoAsignado.nombre + ' ' + medicoAsignado.apellido}">Nombre</div>
+        <div class="sub" th:text="'Céd. ' + ${medicoAsignado.cedula}">Cédula</div>
+      </div>
+      <p class="empty" th:if="${medicoAsignado == null}">Aún no tienes médico asignado.</p>
+      <div class="spacer"></div>
+    </section>
+  </div>
+</div>
+</body>
+</html>

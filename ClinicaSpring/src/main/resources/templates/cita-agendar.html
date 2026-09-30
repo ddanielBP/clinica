@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Agendar cita — Expedientes clínicos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(1000px 700px at 6% 18%, rgba(47,111,180,.85) 0%, rgba(47,111,180,0) 60%),radial-gradient(900px 620px at 88% 88%, rgba(240,138,75,.9) 0%, rgba(240,138,75,0) 58%),radial-gradient(760px 520px at 78% 8%, rgba(207,224,239,.9) 0%, rgba(207,224,239,0) 62%),linear-gradient(135deg,#3a78c2 0%,#a9c4de 38%,#e8c9ae 68%,#f08a4b 100%);background-attachment:fixed;color:#1c1c1e;min-height:100%}
+  ::selection{background:#07576e;color:#fff}
+  .wrap{max-width:1020px;margin:0 auto;padding:28px 24px 48px}
+  header{display:flex;justify-content:space-between;align-items:center;margin:0 0 22px;background:rgba(255,255,255,.82);backdrop-filter:blur(8px);border-radius:14px;padding:12px 18px;box-shadow:0 2px 10px rgba(20,20,30,.08)}
+  .brand{font-size:15px;font-weight:800}.brand span{color:#0d7d9c}
+  .out{font-size:12.5px;font-weight:600;color:#5d5d62}
+  .out:focus-visible,.card button:focus-visible,.card input:focus-visible,.card select:focus-visible{outline:2px solid #07576e;outline-offset:2px}
+  .card{background:#fff;border-radius:18px;padding:26px;box-shadow:0 2px 10px rgba(20,20,30,.06)}
+  .lbl{font-size:12.5px;font-weight:600}
+  .sub{font-size:12.5px;color:#5d5d62;margin-top:2px}
+  .alert{margin:14px 0 0;border-radius:8px;padding:10px 12px;font-size:13px}
+  .alert.err{background:#fdecea;color:#7a1f16;border:1px solid #f3b8b0}
+  select,input[type=text]{
+    font:inherit;font-size:14px;color:#1c1c1e;border:1px solid #a9bcc1;border-radius:8px;
+    background:#fbfdfd;padding:10px 12px;outline:none;width:100%;
+  }
+  select:focus,input[type=text]:focus{border-color:#07576e;box-shadow:0 0 0 3px rgba(13,125,156,.22)}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:18px}
+  .cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .cal-head b{font-size:15px;text-transform:capitalize}
+  .nav{border:1px solid #e2e2e5;background:#fff;border-radius:8px;cursor:pointer;font:inherit;font-size:14px;padding:5px 12px}
+  .nav:disabled{opacity:.35;cursor:default}
+  .grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .dow{font-size:11px;font-weight:700;color:#5d5d62;text-align:center;padding:4px 0}
+  .day{
+    border:0;background:transparent;cursor:pointer;font:inherit;font-size:13px;
+    aspect-ratio:1;border-radius:10px;color:#1c1c1e;
+  }
+  .day:hover:not(:disabled){background:#e3f1f4}
+  .day:disabled{color:#b9bcc1;cursor:default}
+  .day.sel{background:#07576e;color:#fff;font-weight:700}
+  .day.today:not(.sel){box-shadow:inset 0 0 0 2px #0d7d9c}
+  .slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+  .slot{
+    border:1px solid #a9bcc1;background:#fbfdfd;border-radius:8px;cursor:pointer;
+    font:inherit;font-size:13px;font-weight:600;padding:9px 0;color:#084b5e;
+  }
+  .slot:hover:not(:disabled){border-color:#07576e}
+  .slot:disabled{opacity:.35;text-decoration:line-through;cursor:default}
+  .slot.sel{background:#07576e;border-color:#07576e;color:#fff}
+  .cta{
+    border:0;border-radius:8px;cursor:pointer;margin-top:16px;
+    background:#07576e;color:#fff;font:inherit;font-weight:700;font-size:15px;padding:13px 0;width:100%;
+  }
+  .cta:hover{background:#053646}
+  .cta:disabled{opacity:.5;cursor:default}
+  .hint{font-size:12.5px;color:#5d5d62;margin-top:10px}
+  @media (max-width:760px){.cols{grid-template-columns:1fr}}
+  @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Expedientes <span>clínicos</span></div>
+    <a class="out" th:href="@{/panel}" href="#">← Volver al panel</a>
+  </header>
+
+  <div class="card">
+    <div class="lbl">Agendar cita</div>
+    <div class="sub">Elige médico, fecha y horario disponible</div>
+    <div class="alert err" th:if="${error}" th:text="${error}" role="alert">Error.</div>
+
+    <div style="margin-top:14px;max-width:420px">
+      <div class="lbl">Médico elegido</div>
+      <p class="sub" id="medInfo" style="font-size:14px;font-weight:700;color:#084b5e">—</p>
+      <select id="medico" aria-label="Médico" style="margin-top:6px">
+        <option th:each="m : ${medicos}" th:value="${m.id}" th:text="${m.nombre + ' ' + m.apellido + ' · ' + m.especialidad}"
+                th:selected="${m.id == preseleccionado}">Médico</option>
+      </select>
+    </div>
+
+    <div class="cols">
+      <div>
+        <div class="cal-head">
+          <button class="nav" id="prev" type="button" aria-label="Mes anterior">‹</button>
+          <b id="mesLbl">Mes</b>
+          <button class="nav" id="next" type="button" aria-label="Mes siguiente">›</button>
+        </div>
+        <div class="grid7" id="dow"><span class="dow">L</span><span class="dow">M</span><span class="dow">M</span><span class="dow">J</span><span class="dow">V</span><span class="dow">S</span><span class="dow">D</span></div>
+        <div class="grid7" id="cal"></div>
+      </div>
+      <div>
+        <div class="lbl">Horarios <span class="sub" id="diaLbl">— selecciona un día</span></div>
+        <div class="slots" id="slots"></div>
+        <form th:action="@{/citas/agendar}" method="post" style="margin-top:14px">
+          <input type="hidden" id="fMedico" name="medicoId" value="" />
+          <input type="hidden" id="fFecha" name="fechaHora" value="" />
+          <input type="text" id="motivo" name="motivo" placeholder="Motivo de la cita" required maxlength="255" />
+          <button class="cta" id="cta" type="submit" disabled>Agendar cita</button>
+        </form>
+        <p class="hint">Lun–Vie · 09:00 a 13:30 · bloques de 30 min. Las fechas llenas no se pueden elegir.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const SLOTS = ['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30'];
+  const medicoSel = document.getElementById('medico');
+  const cal = document.getElementById('cal');
+  const slotsBox = document.getElementById('slots');
+  const mesLbl = document.getElementById('mesLbl');
+  const diaLbl = document.getElementById('diaLbl');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  const cta = document.getElementById('cta');
+  const fMedico = document.getElementById('fMedico');
+  const fFecha = document.getElementById('fFecha');
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const maxMes = new Date(hoy.getFullYear(), hoy.getMonth() + 2, 1);
+  let vy = hoy.getFullYear(), vm = hoy.getMonth();
+  let selDia = null, selSlot = null, ocupadas = new Set();
+
+  const pad = n => String(n).padStart(2, '0');
+  const key = (y, m, d) => y + '-' + pad(m + 1) + '-' + pad(d);
+
+  async function cargar() {
+    const last = new Date(vy, vm + 1, 0).getDate();
+    const desde = key(vy, vm, 1), hasta = key(vy, vm, last);
+    const r = await fetch('/api/citas/ocupadas?medicoId=' + medicoSel.value + '&desde=' + desde + '&hasta=' + hasta);
+    const arr = await r.json();
+    ocupadas = new Set(arr.map(s => s.slice(0, 16)));
+    selDia = null; selSlot = null; medInfo(); pintar();
+  }
+
+  function diaLleno(y, m, d) {
+    return SLOTS.every(h => ocupadas.has(key(y, m, d) + 'T' + h));
+  }
+
+  function pintar() {
+    mesLbl.textContent = MESES[vm] + ' ' + vy;
+    prevBtn.disabled = (vy === hoy.getFullYear() && vm === hoy.getMonth());
+    nextBtn.disabled = (vy === maxMes.getFullYear() && vm === maxMes.getMonth());
+    cal.innerHTML = '';
+    const primero = new Date(vy, vm, 1);
+    let hueco = (primero.getDay() + 6) % 7;
+    for (let i = 0; i < hueco; i++) cal.appendChild(document.createElement('span'));
+    const last = new Date(vy, vm + 1, 0).getDate();
+    for (let d = 1; d <= last; d++) {
+      const f = new Date(vy, vm, d);
+      const b = document.createElement('button');
+      b.type = 'button'; b.textContent = d; b.className = 'day';
+      const k = key(vy, vm, d);
+      if (f < hoy || f.getDay() === 0 || f.getDay() === 6 || diaLleno(vy, vm, d)) b.disabled = true;
+      if (f.getTime() === hoy.getTime()) b.classList.add('today');
+      if (selDia === k) b.classList.add('sel');
+      b.addEventListener('click', () => { selDia = k; selSlot = null; pintar(); pintarSlots(); });
+      cal.appendChild(b);
+    }
+    pintarSlots();
+  }
+
+  function pintarSlots() {
+    slotsBox.innerHTML = '';
+    if (!selDia) { diaLbl.textContent = '— selecciona un día'; sync(); return; }
+    const [Y, M, D] = selDia.split('-').map(Number);
+    diaLbl.textContent = '— ' + D + ' de ' + MESES[M - 1];
+    const ahora = new Date();
+    SLOTS.forEach(h => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.textContent = h; b.className = 'slot';
+      const pasado = (selDia === key(ahora.getFullYear(), ahora.getMonth(), ahora.getDate()))
+        && (h <= pad(ahora.getHours()) + ':' + pad(ahora.getMinutes()));
+      if (ocupadas.has(selDia + 'T' + h) || pasado) b.disabled = true;
+      if (selSlot === h) b.classList.add('sel');
+      b.addEventListener('click', () => { selSlot = h; pintarSlots(); });
+      slotsBox.appendChild(b);
+    });
+    sync();
+  }
+
+  function medInfo() {
+    const op = medicoSel.options[medicoSel.selectedIndex];
+    document.getElementById('medInfo').textContent = op ? op.text : '—';
+  }
+
+  function sync() {
+    const ok = selDia && selSlot;
+    cta.disabled = !ok;
+    fMedico.value = medicoSel.value;
+    fFecha.value = ok ? selDia + 'T' + selSlot : '';
+  }
+
+  prevBtn.addEventListener('click', () => { vm--; if (vm < 0) { vm = 11; vy--; } cargar(); });
+  nextBtn.addEventListener('click', () => { vm++; if (vm > 11) { vm = 0; vy++; } cargar(); });
+  medicoSel.addEventListener('change', cargar);
+  medInfo();
+  cargar();
+</script>
+</body>
+</html>

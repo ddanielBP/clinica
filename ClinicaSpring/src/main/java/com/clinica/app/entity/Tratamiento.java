@@ -34,5 +34,56 @@ public class Tratamiento {
 
     @Column(name = "indicaciones_adicionales", columnDefinition = "TEXT")
     private String indicacionesAdicionales;
-	
+
+    public Tratamiento() {
+    }
+
+    public Integer getIdTratamiento() {
+        return idTratamiento;
+    }
+
+    public void setIdTratamiento(Integer idTratamiento) {
+        this.idTratamiento = idTratamiento;
+    }
+
+    public ConsultaHistorial getConsulta() {
+        return consulta;
+    }
+
+    public void setConsulta(ConsultaHistorial consulta) {
+        this.consulta = consulta;
+    }
+
+    public String getMedicamentoOProcedimiento() {
+        return medicamentoOProcedimiento;
+    }
+
+    public void setMedicamentoOProcedimiento(String medicamentoOProcedimiento) {
+        this.medicamentoOProcedimiento = medicamentoOProcedimiento;
+    }
+
+    public String getDosisInstrucciones() {
+        return dosisInstrucciones;
+    }
+
+    public void setDosisInstrucciones(String dosisInstrucciones) {
+        this.dosisInstrucciones = dosisInstrucciones;
+    }
+
+    public Integer getDuracionDias() {
+        return duracionDias;
+    }
+
+    public void setDuracionDias(Integer duracionDias) {
+        this.duracionDias = duracionDias;
+    }
+
+    public String getIndicacionesAdicionales() {
+        return indicacionesAdicionales;
+    }
+
+    public void setIndicacionesAdicionales(String indicacionesAdicionales) {
+        this.indicacionesAdicionales = indicacionesAdicionales;
+    }
+
 }

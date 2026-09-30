@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cita — Expedientes clínicos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;color:#1c1c1e;min-height:100%;
+    background:
+      radial-gradient(1000px 700px at 6% 18%, rgba(47,111,180,.85) 0%, rgba(47,111,180,0) 60%),
+      radial-gradient(900px 620px at 88% 88%, rgba(240,138,75,.9) 0%, rgba(240,138,75,0) 58%),
+      radial-gradient(760px 520px at 78% 8%, rgba(207,224,239,.9) 0%, rgba(207,224,239,0) 62%),
+      linear-gradient(135deg,#3a78c2 0%,#a9c4de 38%,#e8c9ae 68%,#f08a4b 100%);
+    background-attachment:fixed}
+  ::selection{background:#07576e;color:#fff}
+  .wrap{max-width:760px;margin:0 auto;padding:28px 24px 48px}
+  header{display:flex;justify-content:space-between;align-items:center;margin:0 0 22px;background:rgba(255,255,255,.82);backdrop-filter:blur(8px);border-radius:14px;padding:12px 18px;box-shadow:0 2px 10px rgba(20,20,30,.08)}
+  .brand{font-size:15px;font-weight:800}.brand span{color:#0d7d9c}
+  .out{font-size:12.5px;font-weight:600;color:#5d5d62}
+  .out:focus-visible,.sheet button:focus-visible,.sheet input:focus-visible,.sheet textarea:focus-visible{outline:2px solid #07576e;outline-offset:2px}
+  .sheet{background:#fff;border-radius:18px;padding:28px;box-shadow:0 2px 10px rgba(20,20,30,.06)}
+  .folio{font-size:12px;font-weight:700;letter-spacing:.08em;color:#0d7d9c;text-transform:uppercase}
+  h1{margin:6px 0 2px;font-size:24px;letter-spacing:-.02em}
+  .fecha{font-size:13px;color:#5d5d62}
+  .tag{display:inline-block;margin-top:10px;font-size:11px;font-weight:700;padding:5px 11px;border-radius:999px}
+  .tag.pend{background:#fdf1e0;color:#9a6200}
+  .tag.conf{background:#e3f1f4;color:#07576e}
+  .tag.ate{background:#e6f6ec;color:#147a3e}
+  .tag.can{background:#fdecea;color:#7a1f16}
+  .sec{margin-top:20px;padding-top:16px;border-top:1px solid #f0f0f2}
+  .sec h2{margin:0 0 6px;font-size:13px;font-weight:700;color:#07576e;text-transform:uppercase;letter-spacing:.06em}
+  .sec p{margin:0;font-size:14.5px;line-height:1.6;white-space:pre-line}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .tto{border:1px solid #e2e2e5;border-radius:12px;padding:14px 16px;margin-top:10px}
+  .tto b{font-size:14.5px}
+  .tto p{margin:6px 0 0;font-size:13.5px;color:#3f3f43;line-height:1.55}
+  .tto .dias{display:inline-block;margin-top:8px;font-size:11px;font-weight:700;background:#e3f1f4;color:#07576e;border-radius:999px;padding:4px 11px}
+  form.atender{margin-top:8px;display:grid;gap:12px}
+  label{font-size:12.5px;color:#3f595f;font-weight:600;display:grid;gap:6px}
+  input,textarea{
+    width:100%;font:inherit;font-size:14px;color:#1c1c1e;border:1px solid #a9bcc1;border-radius:8px;
+    background:#fbfdfd;padding:10px 12px;outline:none;
+  }
+  input:focus,textarea:focus{border-color:#07576e;box-shadow:0 0 0 3px rgba(13,125,156,.22)}
+  textarea{resize:vertical;min-height:70px}
+  .cta{border:0;border-radius:8px;cursor:pointer;background:#147a3e;color:#fff;font:inherit;font-weight:700;font-size:15px;padding:13px 0;width:100%}
+  .cta:hover{background:#0d5c2e}
+  .empty{font-size:13.5px;color:#5d5d62}
+  @media (max-width:600px){.grid2{grid-template-columns:1fr}.sheet{padding:22px 18px}}
+  @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Expedientes <span>clínicos</span></div>
+    <a class="out" th:href="@{/panel}" href="#">← Volver al panel</a>
+  </header>
+
+  <article class="sheet">
+    <div class="folio" th:text="'Cita CITA-' + ${cita.idCita}">CITA-1</div>
+    <h1 th:text="${cita.motivo}">Motivo</h1>
+    <div class="fecha" th:text="${#temporals.format(cita.fechaHora, 'dd MMMM yyyy · HH:mm')}">fecha</div>
+    <span class="tag pend" th:if="${cita.estado == 'PENDIENTE'}">PENDIENTE</span>
+    <span class="tag conf" th:if="${cita.estado == 'CONFIRMADA'}">CONFIRMADA</span>
+    <span class="tag ate" th:if="${cita.estado == 'ATENDIDA'}">ATENDIDA</span>
+    <span class="tag can" th:if="${cita.estado == 'CANCELADA'}">CANCELADA</span>
+
+    <div class="grid2">
+      <div class="sec">
+        <h2>Paciente</h2>
+        <p th:text="${cita.paciente.nombre + ' ' + cita.paciente.apellido}">—</p>
+      </div>
+      <div class="sec">
+        <h2>Médico</h2>
+        <p th:text="${cita.medico.nombre + ' ' + cita.medico.apellido + ' · ' + cita.medico.especialidad}">—</p>
+      </div>
+    </div>
+
+    <div class="sec" th:if="${consulta != null}">
+      <h2>Diagnóstico</h2>
+      <p th:text="${consulta.diagnostco}">—</p>
+    </div>
+    <div class="sec" th:if="${consulta != null and consulta.signosVitales != null and !consulta.signosVitales.isBlank()}">
+      <h2>Signos vitales</h2>
+      <p th:text="${consulta.signosVitales}">—</p>
+    </div>
+    <div class="sec" th:if="${consulta != null and consulta.notasMedicas != null and !consulta.notasMedicas.isBlank()}">
+      <h2>Notas médicas</h2>
+      <p th:text="${consulta.notasMedicas}">—</p>
+    </div>
+    <div class="sec" th:if="${consulta != null}">
+      <h2>Tratamiento indicado</h2>
+      <div class="tto" th:each="t : ${tratamientos}">
+        <b th:text="${t.medicamentoOProcedimiento}">Medicamento</b>
+        <p th:text="${t.dosisInstrucciones}">Dosis</p>
+        <p th:if="${t.indicacionesAdicionales != null and !t.indicacionesAdicionales.isBlank()}" th:text="${t.indicacionesAdicionales}">Indicaciones</p>
+        <span class="dias" th:if="${t.duracionDias != null}" th:text="${t.duracionDias} + ' días'">7 días</span>
+      </div>
+      <p class="empty" th:if="${#lists.isEmpty(tratamientos)}">Sin tratamiento registrado.</p>
+    </div>
+
+    <div class="sec" th:if="${puedeAtender}">
+      <h2>Registrar atención</h2>
+      <p class="empty">Al guardar, la cita pasará de CONFIRMADA a ATENDIDA y se creará el expediente.</p>
+      <form class="atender" th:action="@{'/citas/' + ${cita.idCita} + '/atender'}" method="post">
+        <label>Diagnóstico
+          <textarea name="diagnostico" required maxlength="2000" placeholder="Diagnóstico del paciente"></textarea>
+        </label>
+        <div class="grid2">
+          <label>Signos vitales
+            <input type="text" name="signosVitales" placeholder="TA 120/80, FC 72" />
+          </label>
+          <label>Notas médicas
+            <input type="text" name="notasMedicas" placeholder="Notas adicionales" />
+          </label>
+        </div>
+        <div class="grid2">
+          <label>Medicamento o procedimiento
+            <input type="text" name="medicamento" placeholder="Paracetamol 500mg" />
+          </label>
+          <label>Dosis e instrucciones
+            <input type="text" name="dosis" placeholder="1 tableta cada 8 horas" />
+          </label>
+        </div>
+        <div class="grid2">
+          <label>Duración (días)
+            <input type="number" name="duracionDias" min="1" placeholder="7" />
+          </label>
+          <label>Indicaciones adicionales
+            <input type="text" name="indicaciones" placeholder="Tomar con alimentos" />
+          </label>
+        </div>
+        <button class="cta" type="submit">Guardar atención</button>
+      </form>
+    </div>
+    <div class="sec" th:if="${esMedico and cita.estado == 'PENDIENTE'}">
+      <p class="empty">Acepta la cita desde la bandeja para poder registrar la atención.</p>
+    </div>
+    <div class="sec" th:if="${!esMedico and (cita.estado == 'PENDIENTE' or cita.estado == 'CONFIRMADA')}">
+      <form th:action="@{'/citas/' + ${cita.idCita} + '/cancelar'}" method="post" onsubmit="return confirm('¿Cancelar esta cita?')">
+        <button class="cta" style="background:#7a1f16" type="submit">Cancelar cita</button>
+      </form>
+    </div>
+  </article>
+</div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Citas por atender — Expedientes clínicos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(1000px 700px at 6% 18%, rgba(47,111,180,.85) 0%, rgba(47,111,180,0) 60%),radial-gradient(900px 620px at 88% 88%, rgba(240,138,75,.9) 0%, rgba(240,138,75,0) 58%),radial-gradient(760px 520px at 78% 8%, rgba(207,224,239,.9) 0%, rgba(207,224,239,0) 62%),linear-gradient(135deg,#3a78c2 0%,#a9c4de 38%,#e8c9ae 68%,#f08a4b 100%);background-attachment:fixed;color:#1c1c1e;min-height:100%}
+  ::selection{background:#07576e;color:#fff}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 24px 48px}
+  header{display:flex;justify-content:space-between;align-items:center;margin:0 0 22px;background:rgba(255,255,255,.82);backdrop-filter:blur(8px);border-radius:14px;padding:12px 18px;box-shadow:0 2px 10px rgba(20,20,30,.08)}
+  .brand{font-size:15px;font-weight:800}.brand span{color:#0d7d9c}
+  .out{font-size:12.5px;font-weight:600;color:#5d5d62}
+  .out:focus-visible,.row button:focus-visible{outline:2px solid #07576e;outline-offset:2px}
+  h1{font-size:20px;margin:0}
+  .titlebar{background:rgba(255,255,255,.82);backdrop-filter:blur(8px);border-radius:14px;padding:14px 18px;margin:0 0 18px;box-shadow:0 2px 10px rgba(20,20,30,.08)}
+  .sub{font-size:12.5px;color:#5d5d62;margin:4px 0 18px}
+  .row{
+    background:#fff;border-radius:14px;padding:16px 18px;margin:0 0 12px;
+    box-shadow:0 2px 10px rgba(20,20,30,.06);
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  }
+  .fecha{font-size:15px;font-weight:800;white-space:nowrap}
+  .grow{flex:1;min-width:180px}
+  .grow b{display:block;font-size:14px}
+  .grow span{font-size:12.5px;color:#5d5d62}
+  .tag{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:5px 11px;border-radius:999px;background:#fdf1e0;color:#9a6200}
+  .acc{display:flex;gap:8px}
+  .btn{border:1px solid #e2e2e5;background:#fff;border-radius:8px;cursor:pointer;font:inherit;font-size:12.5px;font-weight:700;padding:8px 18px}
+  .btn.ok{background:#147a3e;border-color:#147a3e;color:#fff}
+  .btn.ok:hover{background:#0d5c2e}
+  .btn.no{color:#7a1f16}
+  .btn.no:hover{background:#fdecea}
+  .empty{background:#fff;border-radius:14px;padding:28px;text-align:center;font-size:14px;color:#5d5d62;box-shadow:0 2px 10px rgba(20,20,30,.06)}
+  a.rowlink{text-decoration:none;color:inherit;display:block}
+  a.rowlink:focus-visible{outline:2px solid #07576e;outline-offset:2px;border-radius:14px}
+  h2.sec{font-size:15px;margin:26px 0 12px;background:rgba(255,255,255,.82);backdrop-filter:blur(8px);border-radius:14px;padding:12px 18px;box-shadow:0 2px 10px rgba(20,20,30,.08)}
+  .tag.conf{background:#e3f1f4;color:#07576e}
+  .tag.ate{background:#e6f6ec;color:#147a3e}
+  .tag.can{background:#fdecea;color:#7a1f16}
+  @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">Expedientes <span>clínicos</span></div>
+    <a class="out" th:href="@{/panel}" href="#">← Volver al panel</a>
+  </header>
+
+  <div class="titlebar">
+  <h1>Citas por atender</h1>
+  <p class="sub" th:text="'Dr(a). ' + ${medico.nombre} + ' ' + ${medico.apellido} + ' · ' + ${#lists.size(pendientes)} + ' pendientes'">pendientes</p>
+  </div>
+
+  <div class="row" th:each="c : ${pendientes}">
+    <span class="fecha" th:text="${#temporals.format(c.fechaHora, 'dd MMM · HH:mm')}">fecha</span>
+    <div class="grow">
+      <b th:text="${c.paciente.nombre + ' ' + c.paciente.apellido}">Paciente</b>
+      <span th:text="${c.motivo}">motivo</span>
+    </div>
+    <span class="tag">PENDIENTE</span>
+    <a class="out" th:href="@{'/citas/' + ${c.idCita}}" href="#">Ver detalle →</a>
+    <div class="acc">
+      <form th:action="@{'/citas/' + ${c.idCita} + '/aceptar'}" method="post" style="margin:0">
+        <button class="btn ok" type="submit">Aceptar</button>
+      </form>
+      <form th:action="@{'/citas/' + ${c.idCita} + '/rechazar'}" method="post" style="margin:0">
+        <button class="btn no" type="submit">Rechazar</button>
+      </form>
+    </div>
+  </div>
+  <div class="empty" th:if="${#lists.isEmpty(pendientes)}">No tienes citas pendientes por revisar.</div>
+
+  <h2 class="sec">Historial</h2>
+  <a class="rowlink" th:each="c : ${historial}" th:href="@{'/citas/' + ${c.idCita}}" href="#">
+  <div class="row">
+    <span class="fecha" th:text="${#temporals.format(c.fechaHora, 'dd MMM · HH:mm')}">fecha</span>
+    <div class="grow">
+      <b th:text="${c.paciente.nombre + ' ' + c.paciente.apellido}">Paciente</b>
+      <span th:text="${c.motivo}">motivo</span>
+    </div>
+    <span class="tag conf" th:if="${c.estado == 'CONFIRMADA'}">CONFIRMADA</span>
+    <span class="tag ate" th:if="${c.estado == 'ATENDIDA'}">ATENDIDA</span>
+    <span class="tag can" th:if="${c.estado == 'CANCELADA'}">CANCELADA</span>
+  </div>
+  </a>
+  <div class="empty" th:if="${#lists.isEmpty(historial)}">Aún no hay movimientos en el historial.</div>
+</div>
+</body>
+</html>

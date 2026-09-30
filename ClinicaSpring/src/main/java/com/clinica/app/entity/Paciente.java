@@ -1,6 +1,6 @@
 package com.clinica.app.entity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,7 +32,7 @@ public class Paciente {
 	private String apellido;
 	
 	@Column(name = "fecha_nacimiento", nullable = false)
-	private LocalDateTime fechaNacimiento;
+	private LocalDate fechaNacimiento;
 	
 	@Column(name = "telefono", length = 20)
 	private String telefono;
@@ -47,7 +47,7 @@ public class Paciente {
 		super();
 	}
 
-	public Paciente(Integer idPaciente, Usuario usuario, String nombre, String apellido, LocalDateTime fechaNacimiento,
+	public Paciente(Integer idPaciente, Usuario usuario, String nombre, String apellido, LocalDate fechaNacimiento,
 			String telefono, String alergias, String tipoSangre) {
 		super();
 		this.idPaciente = idPaciente;
@@ -92,11 +92,11 @@ public class Paciente {
 		this.apellido = apellido;
 	}
 
-	public LocalDateTime getFechaNacimiento() {
+	public LocalDate getFechaNacimiento() {
 		return fechaNacimiento;
 	}
 
-	public void setFechaNacimiento(LocalDateTime fechaNacimiento) {
+	public void setFechaNacimiento(LocalDate fechaNacimiento) {
 		this.fechaNacimiento = fechaNacimiento;
 	}
 

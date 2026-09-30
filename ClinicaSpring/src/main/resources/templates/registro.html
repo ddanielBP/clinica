@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Crear una cuenta — Expedientes clínicos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *{box-sizing:border-box}
+  [hidden]{display:none !important}
+  html,body{height:100%}
+  body{
+    margin:0;font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:#fff;min-height:100%;
+  }
+  ::selection{background:#1e56f0;color:#fff}
+  .card{
+    width:100%;min-height:100dvh;display:grid;grid-template-columns:420px 1fr;
+    background:#fff;
+  }
+  .side{
+    background:#1e56f0;color:#fff;padding:38px 36px 30px;
+    display:flex;flex-direction:column;position:relative;
+  }
+  .logo{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700;letter-spacing:.14em}
+  .side h2{margin:64px 0 0;font-size:38px;line-height:1.12;letter-spacing:-.02em;font-weight:800;text-wrap:balance}
+  .side .sub{margin:16px 0 0;font-size:13.5px;line-height:1.6;color:rgba(255,255,255,.78);max-width:32ch}
+  .quote{
+    margin-top:auto;background:#1843cf;border-radius:12px;padding:20px 20px 16px;
+  }
+  .quote b{display:block;font-size:15px;margin:0 0 8px}
+  .quote p{margin:0;font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.82)}
+  .who{display:flex;align-items:center;gap:10px;margin-top:14px}
+  .who .face{width:28px;height:28px;border-radius:50%;background:#0d7d9c;display:grid;place-items:center;font-size:10px;font-weight:800;flex:none}
+  .who span{font-size:12px;font-weight:600}
+  .stars{margin-left:auto;color:#ffd93b;letter-spacing:3px;font-size:12px;white-space:nowrap}
+  .dots{display:flex;gap:6px;justify-content:center;margin-top:14px}
+  .dots i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.35)}
+  .dots i.on{background:#fff}
+  .main{padding:40px 56px 34px}
+  .steps{display:flex;align-items:center;gap:0;margin:0 0 30px}
+  .steps i{width:9px;height:9px;border-radius:50%;background:#d5dae2;flex:none}
+  .steps i.on{background:#fff;border:2px solid #1e56f0;width:11px;height:11px}
+  .steps b{flex:1;height:1px;background:#e3e6ec;margin:0 8px}
+  h1{margin:0;font-size:24px;font-weight:800;letter-spacing:-.015em;color:#141419}
+  .seg{display:inline-flex;background:#eef0f4;border-radius:999px;padding:3px;margin-top:14px}
+  .seg button{border:0;background:transparent;cursor:pointer;font:inherit;font-size:13px;font-weight:600;color:#5d5d62;padding:8px 22px;border-radius:999px}
+  .seg button[aria-pressed="true"]{background:#1e56f0;color:#fff}
+  .seg button:focus-visible{outline:2px solid #1e56f0;outline-offset:2px}
+  .alert{margin:14px 0 0;border-radius:8px;padding:10px 12px;font-size:13px;text-align:left}
+  .alert.err{background:#fdecea;color:#7a1f16;border:1px solid #f3b8b0}
+  form{margin-top:20px;display:grid;gap:15px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+  label{font-size:12px;color:#4c4c52;font-weight:500;display:grid;gap:6px}
+  input,select{
+    width:100%;font:inherit;font-size:14px;color:#141419;
+    border:1px solid #d5dae0;border-radius:8px;background:#fff;padding:11px 12px;outline:none;
+  }
+  input::placeholder{color:#5d5d62;opacity:1}
+  input:hover,select:hover{border-color:#a9b0ba}
+  input:focus,select:focus{border-color:#1e56f0;box-shadow:0 0 0 3px rgba(30,86,240,.16)}
+  .cta{
+    border:0;border-radius:8px;cursor:pointer;margin-top:4px;
+    background:#1e56f0;color:#fff;font:inherit;font-size:13px;font-weight:700;letter-spacing:.08em;
+    padding:14px 0;width:100%;
+  }
+  .cta:hover{background:#1843cf}
+  .cta:active{transform:translateY(1px)}
+  .signin{margin:18px 0 0;text-align:center;font-size:13px;color:#5d5d62}
+  .signin a{color:#1e56f0;font-weight:700}
+  @media (max-width:880px){
+    .card{grid-template-columns:1fr}
+    .side{padding:30px 24px}.side h2{font-size:30px;margin-top:30px}.quote{margin-top:26px}
+    .main{padding:30px 22px}.grid2{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+  <main class="card" aria-labelledby="titulo">
+    <section class="side" aria-label="Presentación">
+      <div class="logo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h5l2 2.4h7A1.5 1.5 0 0 1 20 9.9V18a1.5 1.5 0 0 1-1.5 1.5h-14A1.5 1.5 0 0 1 3 18Z"/><path d="M12 10.6v5M9.5 13.1h5"/></svg>
+        EXPEDIENTES&nbsp;CLÍNICOS
+      </div>
+      <h2>Crea tu cuenta del archivo clínico</h2>
+      <p class="sub">Un solo acceso para tus citas, expedientes y seguimiento médico.</p>
+      <div class="quote" aria-hidden="true">
+        <b>Tengo todo en un solo lugar</b>
+        <p>Mis citas, recetas y resultados aparecen juntos y entro con un solo clic. Contenido de demostración.</p>
+        <div class="who"><span class="face">JT</span><span>Paciente · Consulta externa</span><span class="stars">★★★★★</span></div>
+      </div>
+      <div class="dots" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+    </section>
+
+    <section class="main" aria-label="Formulario de registro">
+      <div class="steps" aria-hidden="true"><i class="on"></i><b></b><i></i><b></b><i></i><b></b><i></i></div>
+      <h1 id="titulo">Vamos a empezar</h1>
+      <div class="seg" role="group" aria-label="Tipo de cuenta">
+        <button type="button" id="rolMedico" aria-pressed="false">Médico</button>
+        <button type="button" id="rolPaciente" aria-pressed="true">Paciente</button>
+      </div>
+
+      <div class="alert err" th:if="${error}" th:text="${error}" role="alert">No se pudo crear la cuenta.</div>
+
+      <form th:action="@{/registro}" th:object="${usuario}" method="post">
+        <input type="hidden" id="rolId" name="rol.id" value="2" />
+        <div class="grid2">
+          <label>Nombre
+            <input type="text" name="nombre" placeholder="Juan" autocomplete="given-name" required />
+          </label>
+          <label>Apellido
+            <input type="text" name="apellido" placeholder="Torres" autocomplete="family-name" required />
+          </label>
+        </div>
+        <label>Correo
+          <input type="email" th:field="*{correo}" placeholder="juan@clinica.mx" autocomplete="email" required />
+        </label>
+        <div id="wrapPac">
+          <div class="grid2">
+            <label>Fecha de nacimiento
+              <input type="date" name="fechaNacimiento" id="fechaNacimiento" required />
+            </label>
+            <label>Teléfono
+              <input type="tel" name="telefonoPac" placeholder="555 100 2002" autocomplete="tel" />
+            </label>
+          </div>
+          <div class="grid2" style="margin-top:15px">
+            <label>Alergias
+              <input type="text" name="alergias" placeholder="Ninguna conocida" />
+            </label>
+            <label>Tipo de sangre
+              <select name="tipoSangre">
+                <option value="">Seleccionar</option>
+                <option>O+</option><option>O-</option><option>A+</option><option>A-</option>
+                <option>B+</option><option>B-</option><option>AB+</option><option>AB-</option>
+              </select>
+            </label>
+          </div>
+          <label style="margin-top:15px">Médico de preferencia (opcional)
+            <select name="medicoPreferencia">
+              <option value="">Elegir después</option>
+              <option th:each="m : ${medicos}" th:value="${m.id}" th:text="${m.nombre + ' ' + m.apellido + ' · ' + m.especialidad}">Médico</option>
+            </select>
+          </label>
+        </div>
+        <div id="wrapMed" hidden>
+          <div class="grid2">
+            <label>Cédula profesional
+              <input type="text" name="cedula" id="cedula" placeholder="1234567" />
+            </label>
+            <label>Especialidad
+              <input type="text" name="especialidad" id="especialidad" placeholder="Medicina interna" />
+            </label>
+          </div>
+          <label style="margin-top:15px">Teléfono
+            <input type="tel" name="telefonoMed" placeholder="555 100 2001" autocomplete="tel" />
+          </label>
+        </div>
+        <label>Contraseña
+          <input type="password" th:field="*{passwordHash}" id="pass1" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required minlength="6" />
+        </label>
+        <label>Confirmar contraseña
+          <input type="password" name="confirmar" id="pass2" placeholder="Repite la contraseña" autocomplete="new-password" required minlength="6" />
+        </label>
+        <p class="hint" id="passHint" hidden style="font-size:12.5px;color:#b42318;margin:0">Las contraseñas no coinciden.</p>
+        <button class="cta" type="submit">CREAR CUENTA&nbsp;&nbsp;→</button>
+      </form>
+      <p class="signin">¿Ya tienes cuenta? <a th:href="@{/login}" href="#">Inicia sesión</a></p>
+    </section>
+  </main>
+
+<script>
+  const rolMedico = document.getElementById('rolMedico');
+  const rolPaciente = document.getElementById('rolPaciente');
+  const rolId = document.getElementById('rolId');
+  const wrapPac = document.getElementById('wrapPac');
+  const wrapMed = document.getElementById('wrapMed');
+  const fechaNacimiento = document.getElementById('fechaNacimiento');
+  const cedula = document.getElementById('cedula');
+  const especialidad = document.getElementById('especialidad');
+  function setRol(medico) {
+    rolId.value = medico ? '1' : '2';
+    rolMedico.setAttribute('aria-pressed', String(medico));
+    rolPaciente.setAttribute('aria-pressed', String(!medico));
+    wrapPac.hidden = medico;
+    fechaNacimiento.required = !medico;
+    wrapMed.hidden = !medico;
+    cedula.required = medico;
+    especialidad.required = medico;
+  }
+  rolMedico.addEventListener('click', () => setRol(true));
+  rolPaciente.addEventListener('click', () => setRol(false));
+  document.querySelector('form').addEventListener('submit', e => {
+    const p1 = document.getElementById('pass1').value;
+    const p2 = document.getElementById('pass2').value;
+    const hint = document.getElementById('passHint');
+    if (p1 !== p2) {
+      e.preventDefault();
+      hint.hidden = false;
+      document.getElementById('pass2').focus();
+    } else {
+      hint.hidden = true;
+    }
+  });
+</script>
+</body>
+</html>
